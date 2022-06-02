@@ -33,7 +33,7 @@ class MyTopo( Topo ):
 		net = Mininet(link = TCLink)
 		
 		net.addHost('hostA', ip='192.0.0.1/30', defaultRoute='via 192.0.0.2')
-		net.addHost('hostA', ip='192.0.0.10/30', defaultRoute='via 192.0.0.9')
+		net.addHost('hostB', ip='192.0.0.10/30', defaultRoute='via 192.0.0.9')
 		
 		net.addHost('r1', ip='192.0.0.2/30')
 		net.addHost('r2', ip='192.0.0.21/30')
@@ -44,6 +44,37 @@ class MyTopo( Topo ):
 		linkopts0 = dict(bw=0.5, delay='1ms', loss=0, max_queue_size=20, use_tbf=True)
 		linkopts1 = dict(bw=1, delay='1ms', loss=0, max_queue_size=20, use_tbf=True)
 		
+		# Add ip address for Host and Router
+	        
+	        net['hostA'].cmd('ip addr add 192.0.0.1/30 brd + dev hostA-eth0')
+	        net['hostA'].cmd('ip addr add 192.0.0.22/30 brd + dev hostA-eth1')
+	        
+	        net['hostB'].cmd('ip addr add 192.0.0.10/30 brd + dev hostB-eth0')
+	        net['hostB'].cmd('ip addr add 192.0.0.13/30 brd + dev hostB-eth1')
+	        
+	        net['r1'].cmd('ip addr add 192.0.0.2/30 brd + dev r1-eth0')
+	        net['r1'].cmd('ip addr add 192.0.0.5/30 brd + dev r1-eth1')
+	        net['r1'].cmd('ip addr add 192.0.0.25/30 brd + dev r1-eth2')
+	        
+	        net['r2'].cmd('ip addr add 192.0.0.21/30 brd + dev r2-eth0')
+	        net['r2'].cmd('ip addr add 192.0.0.18/30 brd + dev r2-eth1')
+	        net['r2'].cmd('ip addr add 192.0.0.29/30 brd + dev r2-eth2')
+	        
+	        net['r3'].cmd('ip addr add 192.0.0.6/30 brd + dev r3-eth0')
+	        net['r3'].cmd('ip addr add 192.0.0.9/30 brd + dev r3-eth1')
+	        net['r3'].cmd('ip addr add 192.0.0.30/30 brd + dev r3-eth2')
+	        
+	        net['r4'].cmd('ip addr add 192.0.0.17/30 brd + dev r4-eth0')
+	        net['r4'].cmd('ip addr add 192.0.0.14/30 brd + dev r4-eth1')
+	        net['r4'].cmd('ip addr add 192.0.0.26/30 brd + dev r4-eth2')
+		             
+		# ip forward
+		net['r1'].cmd('sysctl net.ipv4.ip_forward=1')
+		net['r2'].cmd('sysctl net.ipv4.ip_forward=1')
+		net['r3'].cmd('sysctl net.ipv4.ip_forward=1')
+		net['r4'].cmd('sysctl net.ipv4.ip_forward=1') 
+		
+	
 		# Add links
 		# Host <--> Router
 		
@@ -66,35 +97,7 @@ class MyTopo( Topo ):
 		net.addLink( net['r3'], net['r2'], intfName1='r3-eth2', intfName2='r2-eth2', bw=1, delay='1ms', loss=0, max_queue_size=20, use_tbf=True)
 
 	        
-	        # Add ip address for Host and Router
-	        
-	        net['HostA'].cmd('ip addr add 192.0.0.1/30 brd + dev hostA-eth0')
-	        net['HostA'].cmd('ip addr add 192.0.0.22/30 brd + dev hostA-eth1')
-	        
-	        net['HostB'].cmd('ip addr add 192.0.0.10/30 brd + dev hostB-eth0')
-	        net['HostB'].cmd('ip addr add 192.0.0.13/30 brd + dev hostB-eth1')
-	        
-	        net['r1'].cmd('ip addr add 192.0.0.2/30 brd + dev r1-eth0')
-	        net['r1'].cmd('ip addr add 192.0.0.5/30 brd + dev r1-eth1')
-	        net['r1'].cmd('ip addr add 192.0.0.25/30 brd + dev r1-eth2')
-	        
-	        net['r2'].cmd('ip addr add 192.0.0.21/30 brd + dev r2-eth0')
-	        net['r2'].cmd('ip addr add 192.0.0.18/30 brd + dev r2-eth1')
-	        net['r2'].cmd('ip addr add 192.0.0.29/30 brd + dev r2-eth2')
-	        
-	        net['r3'].cmd('ip addr add 192.0.0.6/30 brd + dev r3-eth0')
-	        net['r3'].cmd('ip addr add 192.0.0.9/30 brd + dev r3-eth1')
-	        net['r3'].cmd('ip addr add 192.0.0.30/30 brd + dev r3-eth2')
-	        
-	        net['r4'].cmd('ip addr add 192.0.0.17/30 brd + dev r4-eth0')
-	        net['r4'].cmd('ip addr add 192.0.0.14/30 brd + dev r4-eth1')
-	        net['r4'].cmd('ip addr add 192.0.0.26/30 brd + dev r4-eth2')
-		             
-		# ip forward
-		net['r1'].cmd('sysctl net.ipv4.ip_forward=1')
-		net['r2'].cmd('sysctl net.ipv4.ip_forward=1')
-		net['r3'].cmd('sysctl net.ipv4.ip_forward=1')
-		net['r4'].cmd('sysctl net.ipv4.ip_forward=1')          
+	                 
                      
 def run():
     net = Mininet(topo=MyTopo())
